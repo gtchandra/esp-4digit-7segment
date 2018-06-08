@@ -7,6 +7,8 @@ const int CLK = D6; //Set the CLK pin connection to the display
 const int DIO = D5; //Set the DIO pin connection to the display
 String ipAddress;
 void updateClk();
+
+//next step add: https://github.com/tzapu/WiFiManager/blob/master/WiFiManager.cpp
 //------- WiFi Settings -------
 char ssid[] = "Vodafone-56413954";       // your network SSID (name)
 char password[] = "12345678";  // your network key
