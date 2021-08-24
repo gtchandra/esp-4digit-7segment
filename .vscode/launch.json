@@ -12,8 +12,9 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "/Users/tazzarig/Documents/PlatformIO/Projects/esp-clock-4digit-7segment/.pio/build/d1_mini/firmware.elf",
-            "toolchainBinDir": "/Users/tazzarig/.platformio/packages/toolchain-xtensa/bin",
+            "executable": "/Users/gab/Projects/esp-4digit-7segment/.pio/build/d1_mini/firmware.elf",
+            "projectEnvName": "d1_mini",
+            "toolchainBinDir": "/Users/gab/.platformio/packages/toolchain-xtensa/bin",
             "preLaunchTask": {
                 "type": "PlatformIO",
                 "task": "Pre-Debug"
@@ -24,8 +25,9 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "/Users/tazzarig/Documents/PlatformIO/Projects/esp-clock-4digit-7segment/.pio/build/d1_mini/firmware.elf",
-            "toolchainBinDir": "/Users/tazzarig/.platformio/packages/toolchain-xtensa/bin",
+            "executable": "/Users/gab/Projects/esp-4digit-7segment/.pio/build/d1_mini/firmware.elf",
+            "projectEnvName": "d1_mini",
+            "toolchainBinDir": "/Users/gab/.platformio/packages/toolchain-xtensa/bin",
             "internalConsoleOptions": "openOnSessionStart"
         }
     ]

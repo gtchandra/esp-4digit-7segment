@@ -7,7 +7,7 @@
 #include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
 #include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 
-#define ARRAYSIZE 8
+#define ARRAYSIZE 9
 
 // suggestion: if WORLDCLOCK API FAILS then check curl "http://worldtimeapi.org/api/timezone/CET" as alternative using root as Datetime instead of currentDayTime
 void conTimeService();
@@ -15,7 +15,7 @@ const int CLK = D6; //Set the CLK pin connection to the display
 const int DIO = D5; //Set the DIO pin connection to the display
 String ipAddress;
 
-String nightHours[ARRAYSIZE] = {"00","01","02","03","04","05","06","23"};
+String nightHours[ARRAYSIZE] = {"00","01","02","03","04","05","06","22","23"};
 void updateClk();
 bool timeSet=false;
 bool toggle=false;
