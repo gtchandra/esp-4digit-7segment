@@ -7,14 +7,33 @@
 #include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
 #include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 
+#define ARRAYSIZE 8
 
+// suggestion: if WORLDCLOCK API FAILS then check curl "http://worldtimeapi.org/api/timezone/CET" as alternative using root as Datetime instead of currentDayTime
 void conTimeService();
 const int CLK = D6; //Set the CLK pin connection to the display
 const int DIO = D5; //Set the DIO pin connection to the display
 String ipAddress;
+
+String nightHours[ARRAYSIZE] = {"00","01","02","03","04","05","06","23"};
 void updateClk();
 bool timeSet=false;
+bool toggle=false;
+os_timer_t myTimer;
+bool tickOccured;
+bool nightMode;
 
+// start of timerCallback
+void timerCallback(void *pArg) {
+      tickOccured = true;
+}
+// End of timerCallback
+
+void user_init(void) {
+  //The pArg parameter is the value registered with the callback function
+  os_timer_setfn(&myTimer, timerCallback, NULL);
+  os_timer_arm(&myTimer, 1000, true);
+}
 
 String host = "worldclockapi.com";
 int numCounter = 0;
@@ -84,12 +103,20 @@ Clock myClock=Clock();
 
 void setup()
 {
+ pinMode(BUILTIN_LED,OUTPUT);
+ pinMode(D7,INPUT_PULLUP);
+ pinMode(D13, OUTPUT);
+ digitalWrite(D13, 0);
  myClock.setHours(0);
  myClock.setMinutes(0);
  display.setBrightness(0x0f); //set the diplay to maximum brightness
  Serial.begin(9600);
  WiFiManager wifiManager;
  wifiManager.autoConnect();
+ tickOccured = false;
+ user_init();
+ //turnoff the sck  LED
+
 }
 
 void conTimeService ()
@@ -148,7 +175,7 @@ void conTimeService ()
     }
     else
     {
-      Serial.println("client failed to connect");
+      Serial.println("client failed to connect, maybe api is down, try worldtimeapi instead...");
     }
 }
 
@@ -158,7 +185,7 @@ void conTimeService ()
 void updateClk() {
     colon=!colon;
     myClock.tick();
-    Serial.println("Time:"+myClock.getHours()+":"+myClock.getMinutes()+":"+myClock.getSeconds());
+    //Serial.println("Time:"+myClock.getHours()+":"+myClock.getMinutes()+":"+myClock.getSeconds());
     data[0]= display.encodeDigit(myClock.getHours()[0]);
     if (colon) data[1]= 0x80|display.encodeDigit(myClock.getHours()[1]);
     else data[1]= display.encodeDigit(myClock.getHours()[1]);
@@ -169,13 +196,41 @@ void updateClk() {
 
 void loop()
 {
-  if ((millis()-innerTime)>999)
+  if ((millis()-innerTime)>10000)
   {
-    updateClk();
     innerTime=millis();
     if(!timeSet) conTimeService();
-  }
+    if (!digitalRead(D7)) {
+            Serial.println("reset sequence activated");
+            for (int i=0;i<20;i++) {
+              digitalWrite(BUILTIN_LED,LOW);
+              delay(30);
+              digitalWrite(BUILTIN_LED,HIGH);
+              delay(200);
+            }
+            //WIPEOUT WiFi info collected
+            WiFi.disconnect();
+    }
 
+  }
+  if (tickOccured) {
+    nightMode=false;
+    for (int i=0;i<ARRAYSIZE;i++) {
+      if (myClock.getHours()==nightHours[i]) nightMode=true;
+    }
+    if (nightMode) {
+      digitalWrite(D13, 0);
+      display.setBrightness(0x01);
+      digitalWrite(BUILTIN_LED,1); // built in led always off (inverted)
+    }
+    else {
+      display.setBrightness(0x0f);
+      digitalWrite(BUILTIN_LED,toggle);
+      toggle=!toggle;
+    }
+    updateClk();
+    tickOccured=false;
+  }
   if ((millis()-checkTime)>3600000) {
     //wake WiFi
     conTimeService();
