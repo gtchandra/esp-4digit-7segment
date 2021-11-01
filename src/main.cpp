@@ -15,6 +15,7 @@ const int CLK = D6; //Set the CLK pin connection to the display
 const int DIO = D5; //Set the DIO pin connection to the display
 String ipAddress;
 String versionBanner="Gab ESP Clock ver 2021-11";
+//showing versionbanner on Serial port after each connection trial
 String nightHours[ARRAYSIZE] = {"00","01","02","03","04","05","06","22","23"};
 void updateClk();
 bool timeSet=false;
