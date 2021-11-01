@@ -14,7 +14,7 @@ void conTimeService();
 const int CLK = D6; //Set the CLK pin connection to the display
 const int DIO = D5; //Set the DIO pin connection to the display
 String ipAddress;
-
+String versionBanner="Gab ESP Clock ver 2021-11";
 String nightHours[ARRAYSIZE] = {"00","01","02","03","04","05","06","22","23"};
 void updateClk();
 bool timeSet=false;
@@ -177,13 +177,14 @@ void conTimeService ()
     {
       Serial.println("client failed to connect, maybe api is down, try worldtimeapi instead...");
     }
+    Serial.println(versionBanner);
 }
 
 //to do: settare un timer che ad ogni secondo chiama un interrupt routine
 //nella routine chiamare tick() e fare lampeggiare i :
 
 void updateClk() {
-    colon=!colon;
+    if (timeSet) colon=!colon;
     myClock.tick();
     //Serial.println("Time:"+myClock.getHours()+":"+myClock.getMinutes()+":"+myClock.getSeconds());
     data[0]= display.encodeDigit(myClock.getHours()[0]);
@@ -233,6 +234,8 @@ void loop()
   }
   if ((millis()-checkTime)>3600000) {
     //wake WiFi
+    timeSet=false;
+    Serial.println("refresh time from API in progress...");
     conTimeService();
     //shutdown wifi
     checkTime=millis();
